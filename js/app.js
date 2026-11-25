@@ -78,12 +78,27 @@
     return `${n}_${p.type}_${p.L}x${p.H}x${p.P}_${p.t}mm`;
   }
 
+  const blobUrls = [];
   function download(bytes, name, mime) {
+    const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+    blobUrls.push(url);
+    // 1) download automatico (può essere bloccato se la pagina è dentro un riquadro protetto)
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([bytes], { type: mime }));
-    a.download = name;
+    a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    // 2) link sempre visibile, da cliccare se il download automatico non parte
+    const area = $('dlArea');
+    area.innerHTML = '';
+    const p = document.createElement('p');
+    p.textContent = 'File pronto: ';
+    const link = document.createElement('a');
+    link.href = url; link.download = name; link.target = '_blank'; link.rel = 'noopener';
+    link.textContent = '⬇ ' + name;
+    p.appendChild(link);
+    const note = document.createElement('span');
+    note.textContent = ' – se non parte il download, fai clic destro sul link → «Salva link con nome», oppure apri l\'app come file dal repository (dist/scatole-plotter.html).';
+    p.appendChild(note);
+    area.appendChild(p);
   }
 
   $('btnPdf').onclick = () => {

@@ -9,3 +9,6 @@ Web app statica (nessuna dipendenza, nessuna build): apri `index.html` nel brows
 - Le scatole si possono salvare in una lista (localStorage).
 
 Importa il file nel software del plotter Elitron e associa il colore/layer rosso al taglio e il blu alla cordonatura.
+
+## File unico
+`dist/scatole-plotter.html` è l'app in un solo file (generato con `python3 build.py`): scaricalo e aprilo con doppio clic nel browser. È il modo più affidabile per scaricare PDF/DXF.
