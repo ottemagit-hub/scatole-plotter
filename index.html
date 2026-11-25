@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scatole in cartone – File di taglio per plotter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📦 Scatole in cartone</h1>
+    <span class="sub">Fustellato per plotter da taglio (Elitron)</span>
+  </header>
+
+  <main>
+    <section class="panel" aria-label="Parametri">
+      <h2>Scatola</h2>
+      <label>Nome / commessa
+        <input id="name" type="text" placeholder="es. Cliente Rossi">
+      </label>
+      <label>Tipo
+        <select id="type">
+          <option value="0201">Americana (FEFCO 0201) – con alette</option>
+          <option value="lid">Fondo + coperchio separato</option>
+        </select>
+      </label>
+
+      <div class="seg" role="group" aria-label="Riferimento misure">
+        <label><input type="radio" name="dimMode" value="inner" checked> Misure interne</label>
+        <label><input type="radio" name="dimMode" value="outer"> Misure esterne</label>
+      </div>
+
+      <div class="row3">
+        <label>Larghezza (mm)<input id="L" type="number" min="1" step="0.5" value="300"></label>
+        <label>Altezza (mm)<input id="H" type="number" min="1" step="0.5" value="200"></label>
+        <label>Profondità (mm)<input id="P" type="number" min="1" step="0.5" value="150"></label>
+      </div>
+      <p class="hint" id="dimHint"></p>
+
+      <h2>Cartone</h2>
+      <div class="row2">
+        <label>Spessore
+          <select id="tPreset"></select>
+        </label>
+        <label>Spessore (mm)
+          <input id="t" type="number" min="0.3" step="0.1" value="3">
+        </label>
+      </div>
+
+      <details>
+        <summary>Parametri avanzati</summary>
+        <div class="row2">
+          <label>Aletta incollaggio (mm)<input id="glue" type="number" min="10" step="1" value="30"></label>
+          <label>Larghezza tagli alette (mm)<input id="slot" type="number" min="0" step="0.5"></label>
+        </div>
+        <div class="row2" id="lidOpts">
+          <label>Altezza coperchio (mm)<input id="lidHeight" type="number" min="5" step="1" value="30"></label>
+          <label>Gioco coperchio (mm)<input id="clearance" type="number" min="0" step="0.1" value="0.5"></label>
+        </div>
+        <label id="tabOpt">Linguette fondo/coperchio (mm)<input id="tab" type="number" min="5" step="1" value="25"></label>
+        <div class="row2">
+          <label>Layer taglio (DXF)<input id="cutLayer" type="text" value="TAGLIO"></label>
+          <label>Layer cordonatura (DXF)<input id="creaseLayer" type="text" value="CORDONATURA"></label>
+        </div>
+        <label class="chk"><input id="label" type="checkbox"> Scrivi didascalia nel PDF (fuori dal fustellato)</label>
+      </details>
+
+      <div class="actions">
+        <button id="btnPdf" class="primary">⬇ Scarica PDF</button>
+        <button id="btnDxf">⬇ Scarica DXF</button>
+      </div>
+      <button id="btnSave" class="ghost">💾 Salva nella lista</button>
+      <p class="error" id="error" role="alert"></p>
+    </section>
+
+    <section class="preview" aria-label="Anteprima">
+      <div class="info" id="info"></div>
+      <div class="canvas" id="canvas"></div>
+      <div class="legend">
+        <span><i class="l cut"></i> Taglio</span>
+        <span><i class="l crease"></i> Cordonatura</span>
+      </div>
+    </section>
+
+    <section class="panel saved" aria-label="Lista scatole">
+      <h2>Scatole salvate</h2>
+      <ul id="list"></ul>
+      <p class="hint" id="empty">Nessuna scatola salvata.</p>
+    </section>
+  </main>
+
+  <script src="js/geometry.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
