@@ -86,6 +86,12 @@
       <h2>Scatole salvate</h2>
       <ul id="list"></ul>
       <p class="hint" id="empty">Nessuna scatola salvata.</p>
+      <p class="hint" id="storeNote" style="display:none">Qui il browser non permette il salvataggio permanente: la lista resta finché non chiudi la pagina. Usa «Esporta» per conservarla.</p>
+      <div class="actions">
+        <button id="btnExport">Esporta</button>
+        <button onclick="document.getElementById('fileImport').click()">Importa</button>
+      </div>
+      <input id="fileImport" type="file" accept="application/json,.json" hidden>
     </section>
   </main>
 

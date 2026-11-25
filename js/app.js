@@ -109,8 +109,18 @@
 
   /* --- lista salvata --- */
   const FIELDS = ['name', 'type', 'L', 'H', 'P', 't', 'glue', 'slot', 'lidHeight', 'clearance', 'tab', 'cutLayer', 'creaseLayer'];
-  const load = () => { try { return JSON.parse(localStorage.getItem(STORE)) || []; } catch { return []; } };
-  const save = (l) => localStorage.setItem(STORE, JSON.stringify(l));
+  let mem = [];
+  let persistent = true;
+  try { localStorage.setItem(STORE + '-test', '1'); localStorage.removeItem(STORE + '-test'); } catch (e) { persistent = false; }
+  const load = () => {
+    if (persistent) { try { const v = JSON.parse(localStorage.getItem(STORE)); return Array.isArray(v) ? v : []; } catch (e) { persistent = false; } }
+    return mem;
+  };
+  const save = (l) => {
+    mem = l;
+    if (persistent) { try { localStorage.setItem(STORE, JSON.stringify(l)); } catch (e) { persistent = false; } }
+    $('storeNote').style.display = persistent ? 'none' : '';
+  };
 
   function renderList() {
     const items = load();
@@ -139,9 +149,26 @@
     const l = load(); l.unshift(it); save(l); renderList();
   };
 
+  $('btnExport').onclick = () => {
+    const l = load();
+    if (!l.length) return;
+    download(JSON.stringify(l, null, 2), 'scatole_salvate.json', 'application/json');
+  };
+  $('fileImport').onchange = (ev) => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    file.text().then((txt) => {
+      const imported = JSON.parse(txt);
+      if (!Array.isArray(imported)) throw new Error();
+      save(imported.concat(load())); renderList();
+    }).catch(() => { $('error').textContent = 'File della lista non valido.'; });
+    ev.target.value = '';
+  };
+
   document.querySelectorAll('input, select').forEach((el) => {
     if (el !== tPreset) el.addEventListener('input', update);
   });
+  $('storeNote').style.display = persistent ? 'none' : '';
   renderList();
   update();
 })();
