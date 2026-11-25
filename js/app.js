@@ -6,6 +6,19 @@
     ['3', '3 mm – onda B'], ['4', '4 mm – onda C'], ['5', '5 mm'], ['6', '6 mm'],
     ['7', '7 mm – doppia onda BC'], ['8', '8 mm – EB'], ['10', '10 mm'],
   ];
+  const TYPE_NAMES = {
+    '0201': 'Americana FEFCO 0201', '0203': 'Americana tipo FOL (0203)', hsc: 'Americana aperta sotto',
+    sleeve: 'Manicotto', tray: 'Vassoio aperto', lid: 'Fondo + coperchio', hinge: 'Coperchio incernierato',
+  };
+  const HINTS = {
+    '0201': 'Larghezza = lato frontale, profondità = lato corto, altezza = altezza del corpo.',
+    '0203': 'Alette sui lati lunghi a tutta larghezza (si sovrappongono), alette sui lati corti a metà.',
+    hsc: 'Alette solo sopra; il fondo resta aperto (si chiude a parte).',
+    sleeve: 'Fascia chiusa a 4 pannelli con aletta di incollaggio; altezza = altezza del manicotto.',
+    tray: 'Vassoio aperto: base + 4 pareti, le linguette si incollano all\'interno degli angoli.',
+    lid: null,
+    hinge: 'Un solo pezzo: il coperchio è attaccato alla parete posteriore, il risvolto copre la parete frontale.',
+  };
   const STORE = 'scatole-plotter-v1';
 
   const tPreset = $('tPreset');
@@ -52,13 +65,16 @@
     const p = params();
     const err = validate(p);
     $('error').textContent = err;
-    $('lidOpts').style.display = p.type === 'lid' ? '' : 'none';
-    $('tabOpt').style.display = p.type === 'lid' ? '' : 'none';
+    const slottedType = ['0201', '0203', 'hsc', 'sleeve'].includes(p.type);
+    $('slotOpts').style.display = slottedType ? '' : 'none';
+    $('lidOpts').style.display = p.type === 'lid' || p.type === 'hinge' ? '' : 'none';
+    $('clearance').parentElement.style.display = p.type === 'lid' ? '' : 'none';
+    $('tabOpt').style.display = slottedType ? 'none' : '';
     $('dimHint').textContent = p.type === 'lid'
       ? (p.dimMode === 'inner'
         ? 'Misure interne del fondo. Il coperchio viene calcolato per chiudersi sopra il fondo.'
         : 'Larghezza e profondità esterne del coperchio chiuso; altezza = altezza interna del fondo.')
-      : 'Larghezza = lato frontale, profondità = lato corto, altezza = altezza del corpo.';
+      : HINTS[p.type];
     if (err) { current = null; return; }
     try {
       current = { ...Geometry.build(p), params: p };
@@ -105,7 +121,7 @@
     if (!current) return;
     const p = current.params;
     const label = $('label').checked
-      ? `${$('name').value || 'Scatola'} - ${p.type === 'lid' ? 'fondo+coperchio' : 'FEFCO 0201'} ${dimsText(p)} - cartone ${p.t} mm` : null;
+      ? `${$('name').value || 'Scatola'} - ${TYPE_NAMES[p.type]} ${dimsText(p)} - cartone ${p.t} mm` : null;
     download(Export.toPDF(current, { margin: 10, label, title: fileBase() }), fileBase() + '.pdf', 'application/pdf');
   };
   $('btnDxf').onclick = () => {
@@ -145,7 +161,7 @@
     FIELDS.forEach((f) => { it[f] = $(f).value; });
     return it;
   };
-  const labelOf = (it) => `${it.type === 'lid' ? 'Fondo+coperchio' : '0201'} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
+  const labelOf = (it) => `${TYPE_NAMES[it.type] || it.type} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
 
   function openItem(it) {
     FIELDS.forEach((f) => { if (it[f] !== undefined) $(f).value = it[f]; });
