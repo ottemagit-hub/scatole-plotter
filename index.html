@@ -70,6 +70,7 @@
         <button id="btnDxf">⬇ Scarica DXF</button>
       </div>
       <div id="dlArea" class="dl" aria-live="polite"></div>
+      <button id="btnUpdate" class="ghost" style="display:none"></button>
       <button id="btnSave" class="ghost">💾 Salva nella lista</button>
       <p class="error" id="error" role="alert"></p>
     </section>
@@ -84,7 +85,8 @@
     </section>
 
     <section class="panel saved" aria-label="Lista scatole">
-      <h2>Scatole salvate</h2>
+      <h2>Scatole salvate <span id="count"></span></h2>
+      <button id="btnNew" class="ghost" style="margin:0 0 10px">＋ Nuova scatola</button>
       <ul id="list"></ul>
       <p class="hint" id="empty">Nessuna scatola salvata.</p>
       <p class="hint" id="storeNote" style="display:none">Qui il browser non permette il salvataggio permanente: la lista resta finché non chiudi la pagina. Usa «Esporta» per conservarla.</p>

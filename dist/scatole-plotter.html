@@ -43,7 +43,7 @@ button.ghost { width:100%; margin-top:8px; }
 .canvas svg { width:100%; height:auto; max-height:70vh; display:block; }
 .legend { display:flex; gap:18px; margin-top:8px; font-size:12px; color:var(--muted); }
 .l { display:inline-block; width:26px; height:0; border-top:2px solid; vertical-align:middle; margin-right:4px; }
-.l.cut { border-color:#e11; } .l.crease { border-color:#13e; border-top-style:dashed; }
+.l.cut { border-color:#e11; } .l.crease { border-color:#13e; }
 ul { list-style:none; margin:0; padding:0; }
 li { border:1px solid var(--line); border-radius:6px; padding:8px; margin-bottom:8px; font-size:13px; }
 li .meta { color:var(--muted); font-size:12px; }
@@ -52,6 +52,8 @@ li button { padding:4px 8px; font-size:12px; }
 .dl { font-size:12px; color:var(--muted); margin-top:8px; word-break:break-word; }
 .dl a { color:var(--accent); font-weight:600; font-size:14px; }
 .dl p { margin:0; }
+li.active { border-color:var(--accent); background:#fbf3e8; }
+li .btns { flex-wrap:wrap; }
 
 </style>
 </head>
@@ -119,6 +121,7 @@ li button { padding:4px 8px; font-size:12px; }
         <button id="btnDxf">⬇ Scarica DXF</button>
       </div>
       <div id="dlArea" class="dl" aria-live="polite"></div>
+      <button id="btnUpdate" class="ghost" style="display:none"></button>
       <button id="btnSave" class="ghost">💾 Salva nella lista</button>
       <p class="error" id="error" role="alert"></p>
     </section>
@@ -133,7 +136,8 @@ li button { padding:4px 8px; font-size:12px; }
     </section>
 
     <section class="panel saved" aria-label="Lista scatole">
-      <h2>Scatole salvate</h2>
+      <h2>Scatole salvate <span id="count"></span></h2>
+      <button id="btnNew" class="ghost" style="margin:0 0 10px">＋ Nuova scatola</button>
       <ul id="list"></ul>
       <p class="hint" id="empty">Nessuna scatola salvata.</p>
       <p class="hint" id="storeNote" style="display:none">Qui il browser non permette il salvataggio permanente: la lista resta finché non chiudi la pagina. Usa «Esporta» per conservarla.</p>
@@ -311,7 +315,7 @@ li button { padding:4px 8px; font-size:12px; }
     let c = '';
     const draw = (layer) => {
       if (layer === 'cut') c += `1 0 0 RG ${f((opts.cutWidth ?? 0.25) * MM)} w [] 0 d\n`;
-      else c += `0 0 1 RG ${f((opts.creaseWidth ?? 0.25) * MM)} w [${f(4 * MM)} ${f(2 * MM)}] 0 d\n`;
+      else c += `0 0 1 RG ${f((opts.creaseWidth ?? 0.25) * MM)} w [] 0 d\n`;
       for (const p of result.paths) {
         if (p.layer !== layer) continue;
         p.pts.forEach(([x, y], i) => { c += `${X(x)} ${Y(y)} ${i ? 'l' : 'm'}\n`; });
@@ -420,7 +424,7 @@ li button { padding:4px 8px; font-size:12px; }
     const draw = (layer, attrs) => result.paths.filter((p) => p.layer === layer)
       .map((p) => `<path d="${d(p)}" ${attrs}/>`).join('');
     return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linejoin="round">
-      ${draw('crease', 'stroke="#13e" stroke-width="1.2" stroke-dasharray="6 3" vector-effect="non-scaling-stroke"')}
+      ${draw('crease', 'stroke="#13e" stroke-width="1.2" vector-effect="non-scaling-stroke"')}
       ${draw('cut', 'stroke="#e11" stroke-width="1.6" vector-effect="non-scaling-stroke"')}</svg>`;
   }
 
@@ -515,32 +519,68 @@ li button { padding:4px 8px; font-size:12px; }
     $('storeNote').style.display = persistent ? 'none' : '';
   };
 
+  let activeId = null;
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const ensureIds = (l) => l.map((it) => (it.id ? it : { ...it, id: newId() }));
+  const snapshot = () => {
+    const it = { dimMode: current.params.dimMode };
+    FIELDS.forEach((f) => { it[f] = $(f).value; });
+    return it;
+  };
+  const labelOf = (it) => `${it.type === 'lid' ? 'Fondo+coperchio' : '0201'} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
+
+  function openItem(it) {
+    FIELDS.forEach((f) => { if (it[f] !== undefined) $(f).value = it[f]; });
+    document.querySelector(`input[name=dimMode][value=${it.dimMode || 'inner'}]`).checked = true;
+    activeId = it.id;
+    $('t').dispatchEvent(new Event('input'));
+    update(); renderList();
+  }
+
   function renderList() {
     const items = load();
     $('empty').style.display = items.length ? 'none' : '';
+    $('count').textContent = items.length ? `(${items.length})` : '';
+    const active = items.find((it) => it.id === activeId);
+    $('btnUpdate').style.display = active ? '' : 'none';
+    if (active) $('btnUpdate').textContent = '✏️ Aggiorna «' + (active.name || 'Senza nome') + '»';
+    $('btnSave').textContent = active ? '💾 Salva come nuova' : '💾 Salva nella lista';
     $('list').innerHTML = '';
-    items.forEach((it, i) => {
+    items.forEach((it) => {
       const li = document.createElement('li');
-      const t = document.createElement('div');
-      t.innerHTML = `<b></b><div class="meta"></div><div class="btns"><button>Apri</button><button>Elimina</button></div>`;
-      t.querySelector('b').textContent = it.name || 'Senza nome';
-      t.querySelector('.meta').textContent = `${it.type === 'lid' ? 'Fondo+coperchio' : '0201'} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
-      const [open, del] = t.querySelectorAll('button');
-      open.onclick = () => {
-        FIELDS.forEach((f) => { if (it[f] !== undefined) $(f).value = it[f]; });
-        document.querySelector(`input[name=dimMode][value=${it.dimMode || 'inner'}]`).checked = true;
-        $('t').dispatchEvent(new Event('input')); update();
-      };
-      del.onclick = () => { const l = load(); l.splice(i, 1); save(l); renderList(); };
-      li.appendChild(t); $('list').appendChild(li);
+      if (it.id === activeId) li.className = 'active';
+      li.innerHTML = '<b></b><div class="meta"></div><div class="btns"><button data-a="open">Apri</button><button data-a="pdf">PDF</button><button data-a="dxf">DXF</button><button data-a="dup">Duplica</button><button data-a="del">Elimina</button></div>';
+      li.querySelector('b').textContent = it.name || 'Senza nome';
+      li.querySelector('.meta').textContent = labelOf(it);
+      li.querySelectorAll('button').forEach((b) => {
+        b.onclick = () => {
+          const act = b.dataset.a;
+          if (act === 'open') openItem(it);
+          else if (act === 'pdf') { openItem(it); $('btnPdf').click(); }
+          else if (act === 'dxf') { openItem(it); $('btnDxf').click(); }
+          else if (act === 'dup') {
+            const l = load(); const i = l.findIndex((x) => x.id === it.id);
+            l.splice(i + 1, 0, { ...it, id: newId(), name: (it.name || 'Senza nome') + ' (copia)' });
+            save(l); renderList();
+          } else if (act === 'del') {
+            if (it.id === activeId) activeId = null;
+            save(load().filter((x) => x.id !== it.id)); renderList();
+          }
+        };
+      });
+      $('list').appendChild(li);
     });
   }
   $('btnSave').onclick = () => {
     if (!current) return;
-    const it = { dimMode: current.params.dimMode };
-    FIELDS.forEach((f) => { it[f] = $(f).value; });
-    const l = load(); l.unshift(it); save(l); renderList();
+    const it = { ...snapshot(), id: newId() };
+    save([it, ...load()]); activeId = it.id; renderList();
   };
+  $('btnUpdate').onclick = () => {
+    if (!current || !activeId) return;
+    save(load().map((x) => (x.id === activeId ? { ...snapshot(), id: activeId } : x))); renderList();
+  };
+  $('btnNew').onclick = () => { activeId = null; $('name').value = ''; $('name').focus(); renderList(); };
 
   $('btnExport').onclick = () => {
     const l = load();
@@ -553,7 +593,7 @@ li button { padding:4px 8px; font-size:12px; }
     file.text().then((txt) => {
       const imported = JSON.parse(txt);
       if (!Array.isArray(imported)) throw new Error();
-      save(imported.concat(load())); renderList();
+      save(ensureIds(imported).concat(load())); renderList();
     }).catch(() => { $('error').textContent = 'File della lista non valido.'; });
     ev.target.value = '';
   };

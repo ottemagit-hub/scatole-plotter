@@ -23,7 +23,7 @@
     let c = '';
     const draw = (layer) => {
       if (layer === 'cut') c += `1 0 0 RG ${f((opts.cutWidth ?? 0.25) * MM)} w [] 0 d\n`;
-      else c += `0 0 1 RG ${f((opts.creaseWidth ?? 0.25) * MM)} w [${f(4 * MM)} ${f(2 * MM)}] 0 d\n`;
+      else c += `0 0 1 RG ${f((opts.creaseWidth ?? 0.25) * MM)} w [] 0 d\n`;
       for (const p of result.paths) {
         if (p.layer !== layer) continue;
         p.pts.forEach(([x, y], i) => { c += `${X(x)} ${Y(y)} ${i ? 'l' : 'm'}\n`; });
