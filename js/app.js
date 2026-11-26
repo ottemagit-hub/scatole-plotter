@@ -7,17 +7,40 @@
     ['7', '7 mm – doppia onda BC'], ['8', '8 mm – EB'], ['10', '10 mm'],
   ];
   const TYPE_NAMES = {
-    '0201': 'Americana FEFCO 0201', '0203': 'Americana tipo FOL (0203)', hsc: 'Americana aperta sotto',
-    sleeve: 'Manicotto', tray: 'Vassoio aperto', lid: 'Fondo + coperchio', hinge: 'Coperchio incernierato',
+    '0201': 'FEFCO 0201',
+    '0202': 'FEFCO 0202',
+    '0203': 'FEFCO 0203 (FOL)',
+    '0204': 'FEFCO 0204',
+    hsc: 'FEFCO 0200 (aperta)',
+    '0211': 'FEFCO 0211 (astuccio)',
+    '0215': 'FEFCO 0215 (coda rondine)',
+    '0427': 'FEFCO 0427 (a libro)',
+    '0401': 'FEFCO 0401 (a croce)',
+    tray: 'FEFCO 0458 (vassoio)',
+    hinge: 'FEFCO 0422 (incernierato)',
+    lid: 'FEFCO 0330 (fondo+cop.)',
+    sleeve: 'FEFCO 0501 (manicotto)',
+    '0711': 'FEFCO 0711 (fondo aut.)',
+    '0901': 'FEFCO 0901 (falda)',
+    '0933': 'FEFCO 0933 (alveare)',
   };
   const HINTS = {
-    '0201': 'Larghezza = lato frontale, profondità = lato corto, altezza = altezza del corpo.',
-    '0203': 'Alette sui lati lunghi a tutta larghezza (si sovrappongono), alette sui lati corti a metà.',
-    hsc: 'Alette solo sopra; il fondo resta aperto (si chiude a parte).',
-    sleeve: 'Fascia chiusa a 4 pannelli con aletta di incollaggio; altezza = altezza del manicotto.',
+    '0201': 'Americana standard: le alette esterne sui lati lunghi si incontrano a metà.',
+    '0202': 'Le alette esterne sui lati lunghi si sovrappongono al centro (regola «Sovrapposizione» nei parametri avanzati).',
+    '0203': 'Alette sui lati lunghi a tutta larghezza (sovrapposte), alette sui lati corti a metà.',
+    '0204': 'Sia le alette esterne sia quelle interne arrivano a incontrarsi al centro senza fessure.',
+    hsc: 'Mezza scatola americana: alette solo sopra, il fondo resta aperto.',
+    '0211': 'Astuccio incollato sul fianco con coperchio e fondo a linguetta infilabile e invito per il pollice.',
+    '0215': 'Astuccio con coperchio a linguetta sopra e fondo a coda di rondine (1-2-3 senza colla sul fondo).',
+    '0427': 'Scatola a libro automontante senza colla: doppie pareti laterali con piedini a incastro e coperchio con orecchie.',
+    '0401': 'Cartella a croce avvolgente per libri, cornici o lastre: piega prima i lati corti e poi quelli lunghi.',
     tray: 'Vassoio aperto: base + 4 pareti, le linguette si incollano all\'interno degli angoli.',
-    lid: null,
     hinge: 'Un solo pezzo: il coperchio è attaccato alla parete posteriore, il risvolto copre la parete frontale.',
+    lid: null,
+    sleeve: 'Fascia chiusa a 4 pannelli con aletta di incollaggio; altezza = lunghezza del manicotto.',
+    '0711': 'Scatola a fondo automatico (crash-lock): incolla i due triangoli a 45° sulle alette corte adiacenti.',
+    '0901': 'Falda piana interna: inserisci larghezza e profondità interne della scatola (il gioco riduce il bordo).',
+    '0933': 'Divisori a pettine incrociati: genera tutti i pezzi già pronti da tagliare e incastrare nella scatola.',
   };
   const STORE = 'scatole-plotter-v1';
 
@@ -39,13 +62,19 @@
       L: num('L'), P: num('P'), H: num('H'), t,
       glue: num('glue'), slot: slotRaw === '' ? 2 * t : parseFloat(slotRaw),
       tab: num('tab'), clearance: num('clearance'), lidHeight: num('lidHeight'),
+      overlap: num('overlap'), cellsL: Math.round(num('cellsL')), cellsP: Math.round(num('cellsP')),
     };
   }
 
   function validate(p) {
-    for (const k of ['L', 'P', 'H', 't', 'glue', 'slot', 'tab', 'clearance', 'lidHeight'])
+    const reqPos = p.type === '0901' ? ['L', 'P', 't'] : ['L', 'P', 'H', 't'];
+    for (const k of ['L', 'P', 't', 'glue', 'slot', 'tab', 'clearance', 'lidHeight', 'overlap'])
       if (!isFinite(p[k]) || p[k] < 0) return 'Controlla i valori inseriti.';
-    if (p.L <= 0 || p.P <= 0 || p.H <= 0 || p.t <= 0) return 'Larghezza, altezza, profondità e spessore devono essere maggiori di zero.';
+    if (p.type !== '0901' && (!isFinite(p.H) || p.H <= 0)) return 'L\'altezza deve essere maggiore di zero.';
+    for (const k of reqPos) if (p[k] <= 0) return 'Larghezza, profondità e spessore devono essere maggiori di zero.';
+    if (p.type === '0933' && (!isFinite(p.cellsL) || !isFinite(p.cellsP) || p.cellsL < 2 || p.cellsP < 2)) {
+      return 'Inserisci almeno 2 celle per lato.';
+    }
     return '';
   }
 
@@ -59,29 +88,56 @@
       ${draw('cut', 'stroke="#e11" stroke-width="1.6" vector-effect="non-scaling-stroke"')}</svg>`;
   }
 
-  function dimsText(p) { return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm`; }
+  function dimsText(p) {
+    if (p.type === '0901') return `${fmt(p.L)}×${fmt(p.P)} mm`;
+    if (p.type === '0933') return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm (${p.cellsL}×${p.cellsP})`;
+    return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm`;
+  }
 
   function update() {
     const p = params();
     const err = validate(p);
     $('error').textContent = err;
-    const slottedType = ['0201', '0203', 'hsc', 'sleeve'].includes(p.type);
-    $('slotOpts').style.display = slottedType ? '' : 'none';
-    $('lidOpts').style.display = p.type === 'lid' || p.type === 'hinge' ? '' : 'none';
-    $('clearance').parentElement.style.display = p.type === 'lid' ? '' : 'none';
-    $('tabOpt').style.display = slottedType ? 'none' : '';
+
+    const hasGlue = ['0201', '0202', '0203', '0204', 'hsc', 'sleeve', '0211', '0215', '0711'].includes(p.type);
+    const hasSlot = ['0201', '0202', '0203', '0204', 'hsc', '0211', '0215', '0711'].includes(p.type);
+    const hasLidH = ['lid', 'hinge', '0211', '0215'].includes(p.type);
+    const hasClear = ['lid', '0901', '0933'].includes(p.type);
+    const hasTab = ['tray', 'lid', 'hinge'].includes(p.type);
+
+    $('wrapH').style.visibility = p.type === '0901' ? 'hidden' : 'visible';
+    $('dimModeRow').style.display = p.type === '0901' || p.type === '0933' ? 'none' : '';
+    $('gridOpts').style.display = p.type === '0933' ? '' : 'none';
+    $('slotOpts').style.display = hasGlue || hasSlot ? '' : 'none';
+    $('wrapGlue').style.display = hasGlue ? '' : 'none';
+    $('wrapSlot').style.display = hasSlot ? '' : 'none';
+    $('overlapOpt').style.display = p.type === '0202' ? '' : 'none';
+    $('lidOpts').style.display = hasLidH || hasClear ? '' : 'none';
+    $('wrapLidH').style.display = hasLidH ? '' : 'none';
+    $('wrapClear').style.display = hasClear ? '' : 'none';
+    $('tabOpt').style.display = hasTab ? '' : 'none';
+
     $('dimHint').textContent = p.type === 'lid'
       ? (p.dimMode === 'inner'
         ? 'Misure interne del fondo. Il coperchio viene calcolato per chiudersi sopra il fondo.'
         : 'Larghezza e profondità esterne del coperchio chiuso; altezza = altezza interna del fondo.')
       : HINTS[p.type];
+
     if (err) { current = null; return; }
     try {
       current = { ...Geometry.build(p), params: p };
       const area = (current.width * current.height) / 1e6;
+      let extra = `<span>Misure interne: <b>${fmt(current.inner.L)}×${fmt(current.inner.H)}×${fmt(current.inner.P)} mm</b></span>`;
+      if (p.type === '0901') {
+        extra = `<span>Falda tagliata: <b>${fmt(current.width)}×${fmt(current.height)} mm</b></span>`;
+      } else if (p.type === '0933') {
+        const cellW = (current.inner.L - 2 * p.clearance - (p.cellsL - 1) * p.t) / p.cellsL;
+        const cellD = (current.inner.P - 2 * p.clearance - (p.cellsP - 1) * p.t) / p.cellsP;
+        const pcs = (p.cellsL - 1) + (p.cellsP - 1);
+        extra = `<span>Cella utile: <b>~${fmt(cellW)}×${fmt(cellD)} mm</b> (${pcs} divisori)</span>`;
+      }
       $('info').innerHTML = `<span>Foglio necessario: <b>${fmt(current.width)} × ${fmt(current.height)} mm</b></span>` +
-        `<span>Superficie: <b>${area.toLocaleString('it-IT', { maximumFractionDigits: 3 })} m²</b></span>` +
-        `<span>Misure interne: <b>${fmt(current.inner.L)}×${fmt(current.inner.H)}×${fmt(current.inner.P)} mm</b></span>`;
+        `<span>Superficie: <b>${area.toLocaleString('it-IT', { maximumFractionDigits: 3 })} m²</b></span>` + extra;
       $('canvas').innerHTML = svg(current);
     } catch (e) {
       current = null; $('error').textContent = e.message;
@@ -91,18 +147,17 @@
   function fileBase() {
     const p = current.params;
     const n = ($('name').value.trim() || 'scatola').replace(/[^\w\-]+/g, '_');
-    return `${n}_${p.type}_${p.L}x${p.H}x${p.P}_${p.t}mm`;
+    const dims = p.type === '0901' ? `${p.L}x${p.P}` : `${p.L}x${p.H}x${p.P}`;
+    return `${n}_${p.type}_${dims}_${p.t}mm`;
   }
 
   const blobUrls = [];
   function download(bytes, name, mime) {
     const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
     blobUrls.push(url);
-    // 1) download automatico (può essere bloccato se la pagina è dentro un riquadro protetto)
     const a = document.createElement('a');
     a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
-    // 2) link sempre visibile, da cliccare se il download automatico non parte
     const area = $('dlArea');
     area.innerHTML = '';
     const p = document.createElement('p');
@@ -139,7 +194,7 @@
   tPreset.value = '3';
 
   /* --- lista salvata --- */
-  const FIELDS = ['name', 'type', 'L', 'H', 'P', 't', 'glue', 'slot', 'lidHeight', 'clearance', 'tab', 'cutLayer', 'creaseLayer'];
+  const FIELDS = ['name', 'type', 'L', 'H', 'P', 't', 'glue', 'slot', 'lidHeight', 'clearance', 'tab', 'overlap', 'cellsL', 'cellsP', 'cutLayer', 'creaseLayer'];
   let mem = [];
   let persistent = true;
   try { localStorage.setItem(STORE + '-test', '1'); localStorage.removeItem(STORE + '-test'); } catch (e) { persistent = false; }
@@ -161,7 +216,12 @@
     FIELDS.forEach((f) => { it[f] = $(f).value; });
     return it;
   };
-  const labelOf = (it) => `${TYPE_NAMES[it.type] || it.type} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
+  const labelOf = (it) => {
+    const dims = it.type === '0901' ? `${it.L}×${it.P}` : `${it.L}×${it.H}×${it.P}`;
+    const grid = it.type === '0933' ? ` (${it.cellsL || 3}×${it.cellsP || 2})` : '';
+    const ext = it.dimMode === 'outer' && it.type !== '0901' && it.type !== '0933' ? ' (est.)' : '';
+    return `${TYPE_NAMES[it.type] || it.type} ${dims}${grid} – ${it.t} mm${ext}`;
+  };
 
   function openItem(it) {
     FIELDS.forEach((f) => { if (it[f] !== undefined) $(f).value = it[f]; });

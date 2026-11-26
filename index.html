@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>📦 Scatole in cartone</h1>
-    <span class="sub">Fustellato per plotter da taglio (Elitron)</span>
+    <span class="sub">Fustellato FEFCO per plotter da taglio (Elitron)</span>
   </header>
 
   <main>
@@ -18,32 +18,53 @@
       <label>Nome / commessa
         <input id="name" type="text" placeholder="es. Cliente Rossi">
       </label>
-      <label>Tipo
+      <label>Tipo (catalogo FEFCO)
         <select id="type">
-          <optgroup label="Con alette (scatola americana)">
-            <option value="0201">Americana FEFCO 0201 – alette che si incontrano</option>
-            <option value="0203">Americana tipo FOL (0203) – alette sovrapposte</option>
-            <option value="hsc">Americana aperta sotto (alette solo sopra)</option>
-            <option value="sleeve">Manicotto / fascia (senza alette)</option>
+          <optgroup label="Serie 02 – Americane e astucci a fessura">
+            <option value="0201">FEFCO 0201 – Americana standard (alette a metà)</option>
+            <option value="0202">FEFCO 0202 – Americana alette parz. sovrapposte</option>
+            <option value="0203">FEFCO 0203 – Americana alette sovrapposte (FOL)</option>
+            <option value="0204">FEFCO 0204 – Americana tutte le alette al centro</option>
+            <option value="hsc">FEFCO 0200 – Americana aperta (alette solo sopra)</option>
+            <option value="0211">FEFCO 0211 – Astuccio chiusura a incastro sopra/sotto</option>
+            <option value="0215">FEFCO 0215 – Astuccio incastro + fondo coda di rondine</option>
           </optgroup>
-          <optgroup label="Vassoi e coperchi">
-            <option value="tray">Vassoio aperto (con linguette)</option>
-            <option value="lid">Fondo + coperchio separato</option>
-            <option value="hinge">Scatola con coperchio incernierato</option>
+          <optgroup label="Serie 04 – Fustellate a libro, a croce e vassoi">
+            <option value="0427">FEFCO 0427 – Scatola a libro / e-commerce (senza colla)</option>
+            <option value="0401">FEFCO 0401 – Cartella a croce (libri, quadri, lastre)</option>
+            <option value="tray">FEFCO 0458 – Vassoio aperto (con linguette)</option>
+            <option value="hinge">FEFCO 0422 – Scatola con coperchio incernierato</option>
+          </optgroup>
+          <optgroup label="Serie 03 / 05 – Coperchi separati e manicotti">
+            <option value="lid">FEFCO 0330 – Fondo + coperchio separato</option>
+            <option value="sleeve">FEFCO 0501 – Manicotto / fascia scorrevole</option>
+          </optgroup>
+          <optgroup label="Serie 07 – Fondo automatico">
+            <option value="0711">FEFCO 0711 – Scatola a fondo automatico (crash-lock)</option>
+          </optgroup>
+          <optgroup label="Serie 09 – Divisori e interni">
+            <option value="0901">FEFCO 0901 – Falda / separatore piano interno</option>
+            <option value="0933">FEFCO 0933 – Alveare / divisori a incastro</option>
           </optgroup>
         </select>
       </label>
 
-      <div class="seg" role="group" aria-label="Riferimento misure">
+      <div class="seg" id="dimModeRow" role="group" aria-label="Riferimento misure">
         <label><input type="radio" name="dimMode" value="inner" checked> Misure interne</label>
         <label><input type="radio" name="dimMode" value="outer"> Misure esterne</label>
       </div>
 
       <div class="row3">
         <label>Larghezza (mm)<input id="L" type="number" min="1" step="0.5" value="300"></label>
-        <label>Altezza (mm)<input id="H" type="number" min="1" step="0.5" value="200"></label>
+        <label id="wrapH">Altezza (mm)<input id="H" type="number" min="1" step="0.5" value="200"></label>
         <label>Profondità (mm)<input id="P" type="number" min="1" step="0.5" value="150"></label>
       </div>
+
+      <div class="row2" id="gridOpts" style="display:none">
+        <label>Celle in larghezza<input id="cellsL" type="number" min="2" max="20" step="1" value="3"></label>
+        <label>Celle in profondità<input id="cellsP" type="number" min="2" max="20" step="1" value="2"></label>
+      </div>
+
       <p class="hint" id="dimHint"></p>
 
       <h2>Cartone</h2>
@@ -59,12 +80,13 @@
       <details>
         <summary>Parametri avanzati</summary>
         <div class="row2" id="slotOpts">
-          <label>Aletta incollaggio (mm)<input id="glue" type="number" min="10" step="1" value="30"></label>
-          <label>Larghezza tagli alette (mm)<input id="slot" type="number" min="0" step="0.5"></label>
+          <label id="wrapGlue">Aletta incollaggio (mm)<input id="glue" type="number" min="10" step="1" value="30"></label>
+          <label id="wrapSlot">Larghezza tagli alette (mm)<input id="slot" type="number" min="0" step="0.5"></label>
         </div>
+        <label id="overlapOpt" style="display:none">Sovrapposizione alette (mm)<input id="overlap" type="number" min="0" step="1" value="30"></label>
         <div class="row2" id="lidOpts">
-          <label>Altezza coperchio / risvolto (mm)<input id="lidHeight" type="number" min="5" step="1" value="30"></label>
-          <label>Gioco coperchio (mm)<input id="clearance" type="number" min="0" step="0.1" value="0.5"></label>
+          <label id="wrapLidH">Altezza coperchio / linguetta (mm)<input id="lidHeight" type="number" min="5" step="1" value="30"></label>
+          <label id="wrapClear">Gioco (mm)<input id="clearance" type="number" min="0" step="0.1" value="0.5"></label>
         </div>
         <label id="tabOpt">Linguette fondo/coperchio (mm)<input id="tab" type="number" min="5" step="1" value="25"></label>
         <div class="row2">

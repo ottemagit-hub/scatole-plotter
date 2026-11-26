@@ -60,7 +60,7 @@ li .btns { flex-wrap:wrap; }
 <body>
   <header>
     <h1>📦 Scatole in cartone</h1>
-    <span class="sub">Fustellato per plotter da taglio (Elitron)</span>
+    <span class="sub">Fustellato FEFCO per plotter da taglio (Elitron)</span>
   </header>
 
   <main>
@@ -69,32 +69,53 @@ li .btns { flex-wrap:wrap; }
       <label>Nome / commessa
         <input id="name" type="text" placeholder="es. Cliente Rossi">
       </label>
-      <label>Tipo
+      <label>Tipo (catalogo FEFCO)
         <select id="type">
-          <optgroup label="Con alette (scatola americana)">
-            <option value="0201">Americana FEFCO 0201 – alette che si incontrano</option>
-            <option value="0203">Americana tipo FOL (0203) – alette sovrapposte</option>
-            <option value="hsc">Americana aperta sotto (alette solo sopra)</option>
-            <option value="sleeve">Manicotto / fascia (senza alette)</option>
+          <optgroup label="Serie 02 – Americane e astucci a fessura">
+            <option value="0201">FEFCO 0201 – Americana standard (alette a metà)</option>
+            <option value="0202">FEFCO 0202 – Americana alette parz. sovrapposte</option>
+            <option value="0203">FEFCO 0203 – Americana alette sovrapposte (FOL)</option>
+            <option value="0204">FEFCO 0204 – Americana tutte le alette al centro</option>
+            <option value="hsc">FEFCO 0200 – Americana aperta (alette solo sopra)</option>
+            <option value="0211">FEFCO 0211 – Astuccio chiusura a incastro sopra/sotto</option>
+            <option value="0215">FEFCO 0215 – Astuccio incastro + fondo coda di rondine</option>
           </optgroup>
-          <optgroup label="Vassoi e coperchi">
-            <option value="tray">Vassoio aperto (con linguette)</option>
-            <option value="lid">Fondo + coperchio separato</option>
-            <option value="hinge">Scatola con coperchio incernierato</option>
+          <optgroup label="Serie 04 – Fustellate a libro, a croce e vassoi">
+            <option value="0427">FEFCO 0427 – Scatola a libro / e-commerce (senza colla)</option>
+            <option value="0401">FEFCO 0401 – Cartella a croce (libri, quadri, lastre)</option>
+            <option value="tray">FEFCO 0458 – Vassoio aperto (con linguette)</option>
+            <option value="hinge">FEFCO 0422 – Scatola con coperchio incernierato</option>
+          </optgroup>
+          <optgroup label="Serie 03 / 05 – Coperchi separati e manicotti">
+            <option value="lid">FEFCO 0330 – Fondo + coperchio separato</option>
+            <option value="sleeve">FEFCO 0501 – Manicotto / fascia scorrevole</option>
+          </optgroup>
+          <optgroup label="Serie 07 – Fondo automatico">
+            <option value="0711">FEFCO 0711 – Scatola a fondo automatico (crash-lock)</option>
+          </optgroup>
+          <optgroup label="Serie 09 – Divisori e interni">
+            <option value="0901">FEFCO 0901 – Falda / separatore piano interno</option>
+            <option value="0933">FEFCO 0933 – Alveare / divisori a incastro</option>
           </optgroup>
         </select>
       </label>
 
-      <div class="seg" role="group" aria-label="Riferimento misure">
+      <div class="seg" id="dimModeRow" role="group" aria-label="Riferimento misure">
         <label><input type="radio" name="dimMode" value="inner" checked> Misure interne</label>
         <label><input type="radio" name="dimMode" value="outer"> Misure esterne</label>
       </div>
 
       <div class="row3">
         <label>Larghezza (mm)<input id="L" type="number" min="1" step="0.5" value="300"></label>
-        <label>Altezza (mm)<input id="H" type="number" min="1" step="0.5" value="200"></label>
+        <label id="wrapH">Altezza (mm)<input id="H" type="number" min="1" step="0.5" value="200"></label>
         <label>Profondità (mm)<input id="P" type="number" min="1" step="0.5" value="150"></label>
       </div>
+
+      <div class="row2" id="gridOpts" style="display:none">
+        <label>Celle in larghezza<input id="cellsL" type="number" min="2" max="20" step="1" value="3"></label>
+        <label>Celle in profondità<input id="cellsP" type="number" min="2" max="20" step="1" value="2"></label>
+      </div>
+
       <p class="hint" id="dimHint"></p>
 
       <h2>Cartone</h2>
@@ -110,12 +131,13 @@ li .btns { flex-wrap:wrap; }
       <details>
         <summary>Parametri avanzati</summary>
         <div class="row2" id="slotOpts">
-          <label>Aletta incollaggio (mm)<input id="glue" type="number" min="10" step="1" value="30"></label>
-          <label>Larghezza tagli alette (mm)<input id="slot" type="number" min="0" step="0.5"></label>
+          <label id="wrapGlue">Aletta incollaggio (mm)<input id="glue" type="number" min="10" step="1" value="30"></label>
+          <label id="wrapSlot">Larghezza tagli alette (mm)<input id="slot" type="number" min="0" step="0.5"></label>
         </div>
+        <label id="overlapOpt" style="display:none">Sovrapposizione alette (mm)<input id="overlap" type="number" min="0" step="1" value="30"></label>
         <div class="row2" id="lidOpts">
-          <label>Altezza coperchio / risvolto (mm)<input id="lidHeight" type="number" min="5" step="1" value="30"></label>
-          <label>Gioco coperchio (mm)<input id="clearance" type="number" min="0" step="0.1" value="0.5"></label>
+          <label id="wrapLidH">Altezza coperchio / linguetta (mm)<input id="lidHeight" type="number" min="5" step="1" value="30"></label>
+          <label id="wrapClear">Gioco (mm)<input id="clearance" type="number" min="0" step="0.1" value="0.5"></label>
         </div>
         <label id="tabOpt">Linguette fondo/coperchio (mm)<input id="tab" type="number" min="5" step="1" value="25"></label>
         <div class="row2">
@@ -164,9 +186,7 @@ li .btns { flex-wrap:wrap; }
  *
  * Ogni "path" è { layer: 'cut' | 'crease', pts: [[x,y],...], closed: bool }.
  * Le dimensioni di input sono SEMPRE convertite in dimensioni interne prima
- * di costruire il fustellato; lo spessore `t` compensa le cordonature:
- *  - 0201: pannello = dim_interna + t ; altezza corpo = H + t
- *  - vassoio: base = dim_interna + 2t ; parete = H + t/2
+ * di costruire il fustellato; lo spessore `t` compensa le cordonature.
  */
 (function (root) {
   'use strict';
@@ -191,24 +211,36 @@ li .btns { flex-wrap:wrap; }
     return translate(paths, -b.minX, -b.minY);
   }
 
-  /* ---------- Scatole a pannelli con alette (0201, 0203, aperta, manicotto) ---------- */
   function simplify(pts) {
     const out = [];
     for (const p of pts) {
       const q = out[out.length - 1];
-      if (q && q[0] === p[0] && q[1] === p[1]) continue;
+      if (q && Math.abs(q[0] - p[0]) < 1e-6 && Math.abs(q[1] - p[1]) < 1e-6) continue;
       out.push(p);
     }
-    // elimina i punti allineati
+    if (out.length > 1) {
+      const a = out[0], b = out[out.length - 1];
+      if (Math.abs(a[0] - b[0]) < 1e-6 && Math.abs(a[1] - b[1]) < 1e-6) out.pop();
+    }
     const res = [];
     for (let i = 0; i < out.length; i++) {
       const a = out[(i + out.length - 1) % out.length], b = out[i], c = out[(i + 1) % out.length];
       const cross = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
-      if (Math.abs(cross) > 1e-9) res.push(b);
+      if (Math.abs(cross) > 1e-6) res.push([r2(b[0]), r2(b[1])]);
     }
     return res;
   }
 
+  function arcPts(cx, cy, r, a0, a1, steps) {
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const a = a0 + ((a1 - a0) * i) / steps;
+      pts.push([r2(cx + r * Math.cos(a)), r2(cy + r * Math.sin(a))]);
+    }
+    return pts;
+  }
+
+  /* ---------- Serie 02xx a fessura (0201, 0202, 0203, 0204, 0200/hsc, 0501/sleeve) ---------- */
   function slotted(inner, t, opt, variant) {
     const { L, P, H } = inner;
     const G = opt.glue;                       // aletta di incollaggio
@@ -217,19 +249,23 @@ li .btns { flex-wrap:wrap; }
     const Hb = H + t;                         // altezza corpo
     const half = P / 2 + t / 2;               // alette che si incontrano a metà
     const full = P + t;                       // alette a tutta larghezza
+    const pso = Math.min(full, (P + Math.min(opt.overlap, P)) / 2 + t / 2); // parz. sovrapposte
+    const halfL = L / 2 + t / 2;              // alette corte fino al centro (0204)
     const k = Math.min(8, G / 2);             // smusso aletta incollaggio
 
     // altezze alette per pannello [L, P, L, P]
     const fl = {
       '0201': { top: [half, half, half, half], bot: [half, half, half, half] },
+      '0202': { top: [pso, half, pso, half], bot: [pso, half, pso, half] },
       '0203': { top: [full, half, full, half], bot: [full, half, full, half] },
+      '0204': { top: [half, halfL, half, halfL], bot: [half, halfL, half, halfL] },
       'hsc': { top: [half, half, half, half], bot: [0, 0, 0, 0] },
       'sleeve': { top: [0, 0, 0, 0], bot: [0, 0, 0, 0] },
     }[variant];
     const T = Math.max(...fl.top), B = Math.max(...fl.bot);
 
     const e = [G, G + a, G + a + b, G + 2 * a + b, G + 2 * a + 2 * b]; // bordi pannelli
-    const X = e[4], Yb = T + Hb, Y = Yb + B;
+    const X = e[4], Yb = T + Hb;
     const xa = (i) => e[i] + (i > 0 ? s / 2 : 0);
     const xb = (i) => e[i + 1] - (i < 3 ? s / 2 : 0);
 
@@ -252,7 +288,339 @@ li .btns { flex-wrap:wrap; }
     return normalize(paths);
   }
 
-  /* ---------- Vassoio (fondo o coperchio) con linguette ---------- */
+  /* ---------- FEFCO 0211 e 0215 (astuccio con linguetta a incastro / coda di rondine) ---------- */
+  function boxTuck(inner, t, opt, snapBottom) {
+    const { L, P, H } = inner;
+    const G = opt.glue;
+    const s = Math.max(opt.slot, t);
+    const a = L + t, b = P + t;
+    const Hb = H + 2 * t;
+    const Dlid = P + t;
+    const Htuck = Math.max(12, Math.min(opt.lidHeight, Hb - 6));
+    const Ddust = Math.min(r2(0.62 * P + t), Dlid - t);
+    const ins = Math.max(t, 1.5);
+    const rTuck = Math.min(12, Htuck * 0.45, a * 0.2);
+    const rThumb = Math.min(10, a * 0.12, Hb * 0.18);
+    const k = Math.min(8, G / 2);
+
+    const e = [G, G + a, G + a + b, G + 2 * a + b, G + 2 * a + 2 * b];
+    const Yt = Dlid + Htuck, Yb = Yt + Hb;
+    const paths = [];
+    const cr = (x1, y1, x2, y2) => paths.push({ layer: 'crease', pts: [[r2(x1), r2(y1)], [r2(x2), r2(y2)]], closed: false });
+
+    // Contorno superiore per pannello i (dir = -1 sopra, +1 sotto)
+    const tuckPanel = (x1, x2, y0, dir) => {
+      const yLid = y0 + dir * Dlid;
+      const yTip = yLid + dir * Htuck;
+      cr(x1, y0, x2, y0);
+      cr(x1 + ins, yLid, x2 - ins, yLid);
+      if (dir < 0) {
+        return [
+          [x1, y0], [x1, yLid], [x1 + ins, yLid],
+          ...arcPts(x1 + ins + rTuck, yTip + rTuck, rTuck, Math.PI, 1.5 * Math.PI, 5),
+          ...arcPts(x2 - ins - rTuck, yTip + rTuck, rTuck, 1.5 * Math.PI, 2 * Math.PI, 5),
+          [x2 - ins, yLid], [x2, yLid], [x2, y0],
+        ];
+      }
+      return [
+        [x2, y0], [x2, yLid], [x2 - ins, yLid],
+        ...arcPts(x2 - ins - rTuck, yTip - rTuck, rTuck, 0, 0.5 * Math.PI, 5),
+        ...arcPts(x1 + ins + rTuck, yTip - rTuck, rTuck, 0.5 * Math.PI, Math.PI, 5),
+        [x1 + ins, yLid], [x1, yLid], [x1, y0],
+      ];
+    };
+
+    const dustFlap = (x1, x2, y0, dir, notchLeft) => {
+      const ch = Math.min(10, (x2 - x1) * 0.22, Ddust * 0.4);
+      const step = Math.min(Htuck * 0.45, Ddust * 0.35);
+      cr(x1, y0, x2, y0);
+      if (dir < 0) {
+        return notchLeft
+          ? [[x1, y0], [x1 + ch * 0.5, y0 - step], [x1 + ch, y0 - Ddust], [x2 - ch, y0 - Ddust], [x2, y0 - Ddust + ch], [x2, y0]]
+          : [[x1, y0], [x1, y0 - Ddust + ch], [x1 + ch, y0 - Ddust], [x2 - ch, y0 - Ddust], [x2 - ch * 0.5, y0 - step], [x2, y0]];
+      }
+      return notchLeft
+        ? [[x2, y0], [x2, y0 + Ddust - ch], [x2 - ch, y0 + Ddust], [x1 + ch, y0 + Ddust], [x1 + ch * 0.5, y0 + step], [x1, y0]]
+        : [[x2, y0], [x2 - ch * 0.5, y0 + step], [x2 - ch, y0 + Ddust], [x1 + ch, y0 + Ddust], [x1, y0 + Ddust - ch], [x1, y0]];
+    };
+
+    const thumbEdge = (x1, x2, y0, dir) => {
+      const xm = (x1 + x2) / 2;
+      if (dir < 0) return [[x1, y0], ...arcPts(xm, y0, rThumb, Math.PI, 0, 8), [x2, y0]];
+      return [[x2, y0], ...arcPts(xm, y0, rThumb, 0, -Math.PI, 8), [x1, y0]];
+    };
+
+    const pts = [];
+    // Lato superiore: P0 = coperchio+linguetta, P1 = antipolvere, P2 = invito pollice, P3 = antipolvere
+    pts.push(...tuckPanel(e[0], e[1] - s / 2, Yt, -1));
+    pts.push(...dustFlap(e[1] + s / 2, e[2] - s / 2, Yt, -1, false));
+    pts.push(...thumbEdge(e[2] + s / 2, e[3] - s / 2, Yt, -1));
+    pts.push(...dustFlap(e[3] + s / 2, e[4], Yt, -1, true));
+
+    pts.push([e[4], Yb]);
+
+    // Lato inferiore
+    if (!snapBottom) {
+      // FEFCO 0211: chiusura a incastro sul pannello frontale P2 (reverse tuck)
+      pts.push(...dustFlap(e[3] + s / 2, e[4], Yb, 1, false));
+      pts.push(...tuckPanel(e[2] + s / 2, e[3] - s / 2, Yb, 1));
+      pts.push(...dustFlap(e[1] + s / 2, e[2] - s / 2, Yb, 1, true));
+      pts.push(...thumbEdge(e[0], e[1] - s / 2, Yb, 1));
+    } else {
+      // FEFCO 0215: fondo a coda di rondine (1-2-3 snap-lock)
+      const hHalf = P / 2 + t / 2;
+      const ext = Math.max(12, Math.min(22, P * 0.2));
+      const Dmain = Math.min(P + t, hHalf + ext);
+      const wNeck = Math.max(14, Math.min(a - 24, a * 0.36));
+      const ear = Math.min(7, (a - wNeck) * 0.25);
+      const ch = Math.min(8, b * 0.18);
+
+      // P3 (lato corto destro): aletta sagomata a spalla
+      {
+        const x1 = e[3] + s / 2, x2 = e[4];
+        cr(x1, Yb, x2, Yb);
+        pts.push([x2, Yb], [x2 - ch, Yb + hHalf], [x1 + ch, Yb + hHalf], [x1, Yb + hHalf * 0.55], [x1, Yb]);
+      }
+      // P2 (frontale): aletta femmina con scasso centrale a hHalf
+      {
+        const x1 = e[2] + s / 2, x2 = e[3] - s / 2, xm = (x1 + x2) / 2;
+        const wSlot = wNeck + 2;
+        cr(x1, Yb, x2, Yb);
+        pts.push(
+          [x2, Yb], [x2 - ins, Yb + Dmain - 4], [x2 - ins - 4, Yb + Dmain],
+          [xm + wSlot / 2 + 3, Yb + Dmain], [xm + wSlot / 2, Yb + hHalf - t],
+          [xm - wSlot / 2, Yb + hHalf - t], [xm - wSlot / 2 - 3, Yb + Dmain],
+          [x1 + ins + 4, Yb + Dmain], [x1 + ins, Yb + Dmain - 4], [x1, Yb]
+        );
+      }
+      // P1 (lato corto sinistro): aletta sagomata simmetrica
+      {
+        const x1 = e[1] + s / 2, x2 = e[2] - s / 2;
+        cr(x1, Yb, x2, Yb);
+        pts.push([x2, Yb], [x2, Yb + hHalf * 0.55], [x2 - ch, Yb + hHalf], [x1 + ch, Yb + hHalf], [x1, Yb]);
+      }
+      // P0 (posteriore): aletta maschio a coda di rondine
+      {
+        const x1 = e[0], x2 = e[1] - s / 2, xm = (x1 + x2) / 2;
+        const ySh = Yb + hHalf - t, yNeck = Yb + hHalf + t;
+        cr(x1, Yb, x2, Yb);
+        pts.push(
+          [x2, Yb], [x2 - ins, ySh], [xm + wNeck / 2, ySh], [xm + wNeck / 2, yNeck],
+          [xm + wNeck / 2 + ear, yNeck + 2], [xm + wNeck / 2 + ear - 3, Yb + Dmain],
+          [xm - wNeck / 2 - ear + 3, Yb + Dmain], [xm - wNeck / 2 - ear, yNeck + 2],
+          [xm - wNeck / 2, yNeck], [xm - wNeck / 2, ySh], [x1 + ins, ySh], [x1, Yb]
+        );
+      }
+    }
+
+    // Aletta di incollaggio
+    pts.push([G, Yb], [k, Yb], [0, Yb - k], [0, Yt + k], [k, Yt], [G, Yt]);
+
+    paths.unshift({ layer: 'cut', pts: simplify(pts), closed: true });
+    for (const x of [e[0], e[1], e[2], e[3]]) cr(x, Yt, x, Yb);
+    return normalize(paths);
+  }
+
+  /* ---------- FEFCO 0711 (scatola a fondo automatico / crash-lock) ---------- */
+  function box0711(inner, t, opt) {
+    const { L, P, H } = inner;
+    if (L < 0.55 * P) throw new Error('Per FEFCO 0711 la larghezza deve essere almeno il 55% della profondità.');
+    const G = opt.glue;
+    const s = Math.max(opt.slot, t);
+    const a = L + t, b = P + t;
+    const Hb = H + t;
+    const T = P / 2 + t / 2;
+    const Fs = P / 2 + t / 2;
+    const Fb = Math.min(r2(0.64 * P + t), r2(a * 0.68));
+    const d45 = Math.min(r2(Fs * 0.85), r2(a * 0.36));
+    const hook = Math.min(9, a * 0.05);
+    const k = Math.min(8, G / 2);
+
+    const e = [G, G + a, G + a + b, G + 2 * a + b, G + 2 * a + 2 * b];
+    const Yb = T + Hb;
+    const xa = (i) => e[i] + (i > 0 ? s / 2 : 0);
+    const xb = (i) => e[i + 1] - (i < 3 ? s / 2 : 0);
+
+    const paths = [];
+    const cr = (x1, y1, x2, y2) => paths.push({ layer: 'crease', pts: [[r2(x1), r2(y1)], [r2(x2), r2(y2)]], closed: false });
+
+    const pts = [];
+    // Alette superiori tipo 0201
+    for (let i = 0; i < 4; i++) {
+      pts.push([xa(i), T], [xa(i), 0], [xb(i), 0], [xb(i), T]);
+      cr(xa(i), T, xb(i), T);
+    }
+    pts.push([e[4], Yb]);
+
+    const shortBottom = (x1, x2) => {
+      const bevel = Math.min(14, (x2 - x1) * 0.2);
+      cr(x1, Yb, x2, Yb);
+      return [[x2, Yb], [x2 - bevel, Yb + Fs], [x1, Yb + Fs], [x1, Yb]];
+    };
+
+    const longBottom = (x1, x2) => {
+      const xm = (x1 + x2) / 2;
+      cr(x1, Yb, x2, Yb);
+      // cordonatura diagonale a 45° sul triangolo di incollaggio (lato destro dell'aletta)
+      cr(x2, Yb, x2 - d45, Yb + d45);
+      return [
+        [x2, Yb], [x2 - 2, Yb + d45], [x2 - d45, Yb + d45],
+        [xm - 2, Yb + Fs - 2], [xm + hook, Yb + Fb],
+        [x1 + 3, Yb + Fb], [x1, Yb],
+      ];
+    };
+
+    pts.push(...shortBottom(xa(3), xb(3)));
+    pts.push(...longBottom(xa(2), xb(2)));
+    pts.push(...shortBottom(xa(1), xb(1)));
+    pts.push(...longBottom(xa(0), xb(0)));
+
+    pts.push([G, Yb], [k, Yb], [0, Yb - k], [0, T + k], [k, T]);
+
+    paths.unshift({ layer: 'cut', pts: simplify(pts), closed: true });
+    for (const x of [e[0], e[1], e[2], e[3]]) cr(x, T, x, Yb);
+    return normalize(paths);
+  }
+
+  /* ---------- FEFCO 0401 (cartella a croce avvolgente) ---------- */
+  function box0401(inner, t) {
+    const { L, P, H } = inner;
+    const BL = L + t, BP = P + t;
+    const W1 = H + t;                         // pareti interne (sinistra/destra)
+    const W2 = H + 2 * t;                     // pareti esterne (sopra/sotto, avvolgono quelle interne)
+    const Fx = L / 2;                         // falde sin/dx che si incontrano al centro
+    const Fy = P / 2 + t / 2;                 // falde sup/inf che si incontrano al centro
+    const ins = t;
+    const k = Math.min(6, Fx * 0.25, Fy * 0.25);
+
+    const pts = [
+      [0, 0], [0, -W2], [k, -W2 - Fy], [BL - k, -W2 - Fy], [BL, -W2], [BL, 0],
+      [BL, ins], [BL + W1, ins], [BL + W1 + Fx, ins + k], [BL + W1 + Fx, BP - ins - k], [BL + W1, BP - ins], [BL, BP - ins],
+      [BL, BP], [BL, BP + W2], [BL - k, BP + W2 + Fy], [k, BP + W2 + Fy], [0, BP + W2], [0, BP],
+      [0, BP - ins], [-W1, BP - ins], [-W1 - Fx, BP - ins - k], [-W1 - Fx, ins + k], [-W1, ins], [0, ins],
+    ];
+    const paths = [{ layer: 'cut', pts: simplify(pts), closed: true }];
+    const cr = (x1, y1, x2, y2) => paths.push({ layer: 'crease', pts: [[r2(x1), r2(y1)], [r2(x2), r2(y2)]], closed: false });
+    cr(0, 0, BL, 0); cr(0, BP, BL, BP);
+    cr(0, -W2, BL, -W2); cr(0, BP + W2, BL, BP + W2);
+    cr(0, ins, 0, BP - ins); cr(BL, ins, BL, BP - ins);
+    cr(-W1, ins, -W1, BP - ins); cr(BL + W1, ins, BL + W1, BP - ins);
+    return normalize(paths);
+  }
+
+  /* ---------- FEFCO 0427 (scatola a libro / e-commerce automontante senza colla) ---------- */
+  function box0427(inner, t) {
+    const { L, P, H } = inner;
+    if (H < 3 * t) throw new Error('Altezza troppo bassa rispetto allo spessore per la doppia parete FEFCO 0427.');
+    const BL = L + 4 * t;                     // fondo tra le pareti esterne (2t per doppia parete su ogni lato)
+    const BP = P + 2 * t;
+    const Hw = H + t;                         // altezza pareti principali
+    const wRoll = 2 * t + 0.5;                // ponte superiore doppia parete
+    const Hin = Math.max(H - t, 6);           // parete interna ripiegata
+    const hFoot = t + 1.5;                    // sporgenza piedini di bloccaggio
+    const sw = t + 0.5;                       // larghezza fessure sul fondo
+    const gLock = 2 * t + 1.5;                // tasca anteriore per le orecchie del coperchio
+    const g = Math.max(t, 1.5);               // scarico alette angolari
+    const Lear = Math.max(8, Math.min(Hw, (BP - gLock) / 2 - g - 2));
+    const LP = P + 2 * t;                     // profondità coperchio
+    const Htuck = Math.max(H - t, 8);         // risvolto frontale coperchio
+    const gWing = Math.max(2 * t, 2);         // intaglio tra coperchio e orecchie di chiusura
+    const Wwing = Math.max(10, Math.min(P * 0.42, 45));
+    const k = Math.min(5, Lear * 0.3, Wwing * 0.3);
+
+    // Posizioni Y delle fessure/piedini lungo il fondo [0 .. BP - gLock]
+    const usableP = BP - gLock - t;
+    const tabLen = usableP >= 110 ? Math.min(26, usableP * 0.22) : Math.min(34, usableP * 0.45);
+    const slots = usableP >= 110
+      ? [[t + usableP * 0.22 - tabLen / 2, t + usableP * 0.22 + tabLen / 2],
+         [t + usableP * 0.78 - tabLen / 2, t + usableP * 0.78 + tabLen / 2]]
+      : [[t + (usableP - tabLen) / 2, t + (usableP + tabLen) / 2]];
+
+    const paths = [];
+    const cr = (x1, y1, x2, y2) => paths.push({ layer: 'crease', pts: [[r2(x1), r2(y1)], [r2(x2), r2(y2)]], closed: false });
+
+    // Cordonature verticali del fondo x=0 e x=BL, interrotte in corrispondenza delle fessure
+    const splitCrease = (x) => {
+      let yCur = 0;
+      for (const [ya, yb] of slots) {
+        if (ya > yCur) cr(x, yCur, x, ya);
+        yCur = yb;
+      }
+      if (yCur < BP) cr(x, yCur, x, BP);
+    };
+    splitCrease(0);
+    splitCrease(BL);
+
+    // Fessure rettangolari di bloccaggio sul fondo
+    for (const [ya, yb] of slots) {
+      paths.push({ layer: 'cut', pts: [[0, r2(ya)], [r2(sw), r2(ya)], [r2(sw), r2(yb)], [0, r2(yb)]], closed: true });
+      paths.push({ layer: 'cut', pts: [[r2(BL - sw), r2(ya)], [r2(BL), r2(ya)], [r2(BL), r2(yb)], [r2(BL - sw), r2(yb)]], closed: true });
+    }
+
+    const yLid = -Hw - LP;
+    const yTip = yLid - Htuck;
+    const ixL = 2 * t, ixR = BL - 2 * t;
+
+    const pts = [];
+    // 1) Lato superiore: parete posteriore + coperchio + risvolto frontale con 2 orecchie laterali
+    pts.push(
+      [0, -Hw], [0, yLid], [ixL, yLid],
+      [ixL, yLid - gWing], [ixL - Wwing + k, yLid - gWing], [ixL - Wwing, yLid - gWing - k],
+      [ixL - Wwing, yTip + k], [ixL - Wwing + k, yTip], [ixL, yTip],
+      [ixR, yTip],
+      [ixR + Wwing - k, yTip], [ixR + Wwing, yTip + k],
+      [ixR + Wwing, yLid - gWing - k], [ixR + Wwing - k, yLid - gWing], [ixR, yLid - gWing],
+      [ixR, yLid], [BL, yLid], [BL, -Hw]
+    );
+    // Aletta angolare posteriore destra
+    pts.push([BL + Lear - k, -Hw], [BL + Lear, -Hw + k], [BL + Lear, -g - k], [BL + Lear - k, -g], [BL, -g], [BL, 0]);
+
+    // 2) Doppia parete destra (dall'alto verso il basso lungo il bordo esterno con i piedini)
+    const xR1 = BL + Hw, xR2 = xR1 + wRoll, xR3 = xR2 + Hin;
+    pts.push([xR2, 0], [xR2, t], [xR3, t]);
+    for (const [ya, yb] of slots) {
+      pts.push([xR3, ya + 0.5], [xR3 + hFoot, ya + 1], [xR3 + hFoot, yb - 1], [xR3, yb - 0.5]);
+    }
+    pts.push([xR3, BP - gLock], [xR2, BP - gLock], [xR2, BP], [BL, BP]);
+
+    // 3) Parete anteriore + alette angolari anteriori (destra e sinistra)
+    pts.push(
+      [BL, BP + g], [BL + Lear - k, BP + g], [BL + Lear, BP + g + k], [BL + Lear, BP + Hw - k], [BL + Lear - k, BP + Hw],
+      [BL, BP + Hw], [0, BP + Hw],
+      [-Lear + k, BP + Hw], [-Lear, BP + Hw - k], [-Lear, BP + g + k], [-Lear + k, BP + g], [0, BP + g], [0, BP]
+    );
+
+    // 4) Doppia parete sinistra (dal basso verso l'alto)
+    const xL1 = -Hw, xL2 = xL1 - wRoll, xL3 = xL2 - Hin;
+    pts.push([xL2, BP], [xL2, BP - gLock], [xL3, BP - gLock]);
+    for (const [ya, yb] of [...slots].reverse()) {
+      pts.push([xL3, yb - 0.5], [xL3 - hFoot, yb - 1], [xL3 - hFoot, ya + 1], [xL3, ya + 0.5]);
+    }
+    pts.push([xL3, t], [xL2, t], [xL2, 0], [0, 0]);
+
+    // Aletta angolare posteriore sinistra
+    pts.push([0, -g], [-Lear + k, -g], [-Lear, -g - k], [-Lear, -Hw + k], [-Lear + k, -Hw]);
+
+    paths.unshift({ layer: 'cut', pts: simplify(pts), closed: true });
+
+    // Cordonature orizzontali e verticali
+    cr(0, 0, BL, 0);
+    cr(0, BP, BL, BP);
+    cr(0, -Hw, BL, -Hw);
+    cr(ixL, yLid, ixR, yLid);
+    // Orecchie del coperchio
+    cr(ixL, yTip, ixL, yLid - gWing);
+    cr(ixR, yTip, ixR, yLid - gWing);
+    // Cerniere alette angolari
+    for (const x of [0, BL]) { cr(x, -Hw, x, -g); cr(x, BP + g, x, BP + Hw); }
+    // Doppie cordonature pareti laterali
+    cr(xR1, 0, xR1, BP); cr(xR2, t, xR2, BP - gLock);
+    cr(xL1, 0, xL1, BP); cr(xL2, t, xL2, BP - gLock);
+
+    return normalize(paths);
+  }
+
+  /* ---------- Vassoio (0458 fondo o coperchio, 0422 con coperchio incernierato) ---------- */
   function tray(inner, t, opt, hinged) {
     const { L, P, H } = inner;
     const BL = L + 2 * t, BP = P + 2 * t;
@@ -291,7 +659,7 @@ li .btns { flex-wrap:wrap; }
     return normalize(paths);
   }
 
-  /* ---------- Scatola fondo + coperchio separato ---------- */
+  /* ---------- FEFCO 0330: Scatola fondo + coperchio separato ---------- */
   function boxLid(inner, t, opt) {
     const c = opt.clearance;
     const base = tray(inner, t, opt);
@@ -302,37 +670,104 @@ li .btns { flex-wrap:wrap; }
     return normalize(all);
   }
 
+  /* ---------- FEFCO 0901: Falda piana di separazione ---------- */
+  function pad0901(inner, opt) {
+    const c = opt.clearance;
+    const W = Math.max(10, inner.L - 2 * c);
+    const D = Math.max(10, inner.P - 2 * c);
+    const k = Math.min(3, W * 0.05, D * 0.05);
+    const pts = k > 0.5
+      ? [[k, 0], [W - k, 0], [W, k], [W, D - k], [W - k, D], [k, D], [0, D - k], [0, k]]
+      : [[0, 0], [W, 0], [W, D], [0, D]];
+    return normalize([{ layer: 'cut', pts: simplify(pts), closed: true }]);
+  }
+
+  /* ---------- FEFCO 0933: Divisori ad alveare a incastro ---------- */
+  function grid0933(inner, t, opt) {
+    const c = opt.clearance;
+    const nL = Math.max(2, Math.min(20, Math.round(opt.cellsL || 3)));
+    const nP = Math.max(2, Math.min(20, Math.round(opt.cellsP || 2)));
+    const WL = inner.L - 2 * c;
+    const WP = inner.P - 2 * c;
+    const Hd = inner.H - c;
+    const sw = t + 0.3;                           // larghezza intagli d'incastro
+    const sd = Hd / 2 + 0.5;                      // profondità intagli (metà altezza)
+    if (WL / nL <= sw + 4 || WP / nP <= sw + 4) {
+      throw new Error('Troppe celle rispetto alle dimensioni e allo spessore.');
+    }
+    if (Hd < 12) throw new Error('Altezza troppo bassa per realizzare i divisori.');
+
+    const strip = (W, nCells, x0, y0) => {
+      const lead = Math.min(1.5, sw * 0.4);
+      const pts = [[x0, y0]];
+      for (let i = 1; i < nCells; i++) {
+        const xc = x0 + (W * i) / nCells;
+        pts.push(
+          [xc - sw / 2 - lead, y0],
+          [xc - sw / 2, y0 + lead],
+          [xc - sw / 2, y0 + sd],
+          [xc + sw / 2, y0 + sd],
+          [xc + sw / 2, y0 + lead],
+          [xc + sw / 2 + lead, y0]
+        );
+      }
+      pts.push([x0 + W, y0], [x0 + W, y0 + Hd], [x0, y0 + Hd]);
+      return { layer: 'cut', pts: simplify(pts), closed: true };
+    };
+
+    const paths = [];
+    const gap = 8;
+    // (nP - 1) pettini lunghi WL (con nL - 1 intagli ciascuno)
+    for (let j = 0; j < nP - 1; j++) paths.push(strip(WL, nL, 0, j * (Hd + gap)));
+    // (nL - 1) pettini corti WP affiancati a destra (con nP - 1 intagli ciascuno)
+    const xCol2 = WL + 12;
+    for (let i = 0; i < nL - 1; i++) paths.push(strip(WP, nP, xCol2, i * (Hd + gap)));
+    return normalize(paths);
+  }
+
   /* ---------- API ---------- */
-  /**
-   * params: { type:'0201'|'0203'|'hsc'|'sleeve'|'tray'|'lid'|'hinge', dimMode:'inner'|'outer', L,P,H, t,
-   *           glue, slot, tab, clearance, lidHeight }
-   */
   function build(params) {
     const t = params.t;
     const opt = {
       glue: params.glue, slot: params.slot, tab: params.tab,
       clearance: params.clearance, lidHeight: params.lidHeight,
+      overlap: params.overlap ?? 30, cellsL: params.cellsL ?? 3, cellsP: params.cellsP ?? 2,
     };
     const type = params.type;
-    const isTray = type === 'tray' || type === 'hinge' || type === 'lid';
     let inner = { L: params.L, P: params.P, H: params.H };
     if (params.dimMode === 'outer') {
       if (type === 'lid') {
-        // L,P riferite al coperchio chiuso; il fondo sta dentro con gioco
         inner = { L: params.L - 4 * t - 2 * opt.clearance, P: params.P - 4 * t - 2 * opt.clearance, H: params.H };
-      } else if (isTray) {
-        inner = { L: params.L - 2 * t, P: params.P - 2 * t, H: params.H - t };
+      } else if (type === 'tray' || type === 'hinge') {
+        inner = { L: params.L - 2 * t, P: params.P - 2 * t, H: params.H - (type === 'hinge' ? 2 * t : t) };
+      } else if (type === '0401') {
+        inner = { L: params.L - 2 * t, P: params.P - 2 * t, H: params.H - 3 * t };
+      } else if (type === '0427') {
+        inner = { L: params.L - 4 * t, P: params.P - 2 * t, H: params.H - 2 * t };
+      } else if (type === '0901' || type === '0933') {
+        inner = { L: params.L, P: params.P, H: params.H };
       } else {
         const bottoms = type === 'sleeve' ? 0 : type === 'hsc' ? 1 : 2;
         inner = { L: params.L - 2 * t, P: params.P - 2 * t, H: params.H - bottoms * t };
       }
     }
-    if (inner.L <= 0 || inner.P <= 0 || inner.H <= 0) throw new Error('Dimensioni troppo piccole rispetto allo spessore.');
+    if (inner.L <= 0 || inner.P <= 0 || (type !== '0901' && inner.H <= 0)) {
+      throw new Error('Dimensioni troppo piccole rispetto allo spessore.');
+    }
+
     let paths;
     if (type === 'lid') paths = boxLid(inner, t, opt);
     else if (type === 'tray') paths = tray(inner, t, opt, false);
     else if (type === 'hinge') paths = tray(inner, t, opt, true);
+    else if (type === '0211') paths = boxTuck(inner, t, opt, false);
+    else if (type === '0215') paths = boxTuck(inner, t, opt, true);
+    else if (type === '0711') paths = box0711(inner, t, opt);
+    else if (type === '0401') paths = box0401(inner, t);
+    else if (type === '0427') paths = box0427(inner, t);
+    else if (type === '0901') paths = pad0901(inner, opt);
+    else if (type === '0933') paths = grid0933(inner, t, opt);
     else paths = slotted(inner, t, opt, type);
+
     const b = bounds(paths);
     return { paths, width: r2(b.w), height: r2(b.h), inner };
   }
@@ -443,17 +878,40 @@ li .btns { flex-wrap:wrap; }
     ['7', '7 mm – doppia onda BC'], ['8', '8 mm – EB'], ['10', '10 mm'],
   ];
   const TYPE_NAMES = {
-    '0201': 'Americana FEFCO 0201', '0203': 'Americana tipo FOL (0203)', hsc: 'Americana aperta sotto',
-    sleeve: 'Manicotto', tray: 'Vassoio aperto', lid: 'Fondo + coperchio', hinge: 'Coperchio incernierato',
+    '0201': 'FEFCO 0201',
+    '0202': 'FEFCO 0202',
+    '0203': 'FEFCO 0203 (FOL)',
+    '0204': 'FEFCO 0204',
+    hsc: 'FEFCO 0200 (aperta)',
+    '0211': 'FEFCO 0211 (astuccio)',
+    '0215': 'FEFCO 0215 (coda rondine)',
+    '0427': 'FEFCO 0427 (a libro)',
+    '0401': 'FEFCO 0401 (a croce)',
+    tray: 'FEFCO 0458 (vassoio)',
+    hinge: 'FEFCO 0422 (incernierato)',
+    lid: 'FEFCO 0330 (fondo+cop.)',
+    sleeve: 'FEFCO 0501 (manicotto)',
+    '0711': 'FEFCO 0711 (fondo aut.)',
+    '0901': 'FEFCO 0901 (falda)',
+    '0933': 'FEFCO 0933 (alveare)',
   };
   const HINTS = {
-    '0201': 'Larghezza = lato frontale, profondità = lato corto, altezza = altezza del corpo.',
-    '0203': 'Alette sui lati lunghi a tutta larghezza (si sovrappongono), alette sui lati corti a metà.',
-    hsc: 'Alette solo sopra; il fondo resta aperto (si chiude a parte).',
-    sleeve: 'Fascia chiusa a 4 pannelli con aletta di incollaggio; altezza = altezza del manicotto.',
+    '0201': 'Americana standard: le alette esterne sui lati lunghi si incontrano a metà.',
+    '0202': 'Le alette esterne sui lati lunghi si sovrappongono al centro (regola «Sovrapposizione» nei parametri avanzati).',
+    '0203': 'Alette sui lati lunghi a tutta larghezza (sovrapposte), alette sui lati corti a metà.',
+    '0204': 'Sia le alette esterne sia quelle interne arrivano a incontrarsi al centro senza fessure.',
+    hsc: 'Mezza scatola americana: alette solo sopra, il fondo resta aperto.',
+    '0211': 'Astuccio incollato sul fianco con coperchio e fondo a linguetta infilabile e invito per il pollice.',
+    '0215': 'Astuccio con coperchio a linguetta sopra e fondo a coda di rondine (1-2-3 senza colla sul fondo).',
+    '0427': 'Scatola a libro automontante senza colla: doppie pareti laterali con piedini a incastro e coperchio con orecchie.',
+    '0401': 'Cartella a croce avvolgente per libri, cornici o lastre: piega prima i lati corti e poi quelli lunghi.',
     tray: 'Vassoio aperto: base + 4 pareti, le linguette si incollano all\'interno degli angoli.',
-    lid: null,
     hinge: 'Un solo pezzo: il coperchio è attaccato alla parete posteriore, il risvolto copre la parete frontale.',
+    lid: null,
+    sleeve: 'Fascia chiusa a 4 pannelli con aletta di incollaggio; altezza = lunghezza del manicotto.',
+    '0711': 'Scatola a fondo automatico (crash-lock): incolla i due triangoli a 45° sulle alette corte adiacenti.',
+    '0901': 'Falda piana interna: inserisci larghezza e profondità interne della scatola (il gioco riduce il bordo).',
+    '0933': 'Divisori a pettine incrociati: genera tutti i pezzi già pronti da tagliare e incastrare nella scatola.',
   };
   const STORE = 'scatole-plotter-v1';
 
@@ -475,13 +933,19 @@ li .btns { flex-wrap:wrap; }
       L: num('L'), P: num('P'), H: num('H'), t,
       glue: num('glue'), slot: slotRaw === '' ? 2 * t : parseFloat(slotRaw),
       tab: num('tab'), clearance: num('clearance'), lidHeight: num('lidHeight'),
+      overlap: num('overlap'), cellsL: Math.round(num('cellsL')), cellsP: Math.round(num('cellsP')),
     };
   }
 
   function validate(p) {
-    for (const k of ['L', 'P', 'H', 't', 'glue', 'slot', 'tab', 'clearance', 'lidHeight'])
+    const reqPos = p.type === '0901' ? ['L', 'P', 't'] : ['L', 'P', 'H', 't'];
+    for (const k of ['L', 'P', 't', 'glue', 'slot', 'tab', 'clearance', 'lidHeight', 'overlap'])
       if (!isFinite(p[k]) || p[k] < 0) return 'Controlla i valori inseriti.';
-    if (p.L <= 0 || p.P <= 0 || p.H <= 0 || p.t <= 0) return 'Larghezza, altezza, profondità e spessore devono essere maggiori di zero.';
+    if (p.type !== '0901' && (!isFinite(p.H) || p.H <= 0)) return 'L\'altezza deve essere maggiore di zero.';
+    for (const k of reqPos) if (p[k] <= 0) return 'Larghezza, profondità e spessore devono essere maggiori di zero.';
+    if (p.type === '0933' && (!isFinite(p.cellsL) || !isFinite(p.cellsP) || p.cellsL < 2 || p.cellsP < 2)) {
+      return 'Inserisci almeno 2 celle per lato.';
+    }
     return '';
   }
 
@@ -495,29 +959,56 @@ li .btns { flex-wrap:wrap; }
       ${draw('cut', 'stroke="#e11" stroke-width="1.6" vector-effect="non-scaling-stroke"')}</svg>`;
   }
 
-  function dimsText(p) { return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm`; }
+  function dimsText(p) {
+    if (p.type === '0901') return `${fmt(p.L)}×${fmt(p.P)} mm`;
+    if (p.type === '0933') return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm (${p.cellsL}×${p.cellsP})`;
+    return `${fmt(p.L)}×${fmt(p.H)}×${fmt(p.P)} mm`;
+  }
 
   function update() {
     const p = params();
     const err = validate(p);
     $('error').textContent = err;
-    const slottedType = ['0201', '0203', 'hsc', 'sleeve'].includes(p.type);
-    $('slotOpts').style.display = slottedType ? '' : 'none';
-    $('lidOpts').style.display = p.type === 'lid' || p.type === 'hinge' ? '' : 'none';
-    $('clearance').parentElement.style.display = p.type === 'lid' ? '' : 'none';
-    $('tabOpt').style.display = slottedType ? 'none' : '';
+
+    const hasGlue = ['0201', '0202', '0203', '0204', 'hsc', 'sleeve', '0211', '0215', '0711'].includes(p.type);
+    const hasSlot = ['0201', '0202', '0203', '0204', 'hsc', '0211', '0215', '0711'].includes(p.type);
+    const hasLidH = ['lid', 'hinge', '0211', '0215'].includes(p.type);
+    const hasClear = ['lid', '0901', '0933'].includes(p.type);
+    const hasTab = ['tray', 'lid', 'hinge'].includes(p.type);
+
+    $('wrapH').style.visibility = p.type === '0901' ? 'hidden' : 'visible';
+    $('dimModeRow').style.display = p.type === '0901' || p.type === '0933' ? 'none' : '';
+    $('gridOpts').style.display = p.type === '0933' ? '' : 'none';
+    $('slotOpts').style.display = hasGlue || hasSlot ? '' : 'none';
+    $('wrapGlue').style.display = hasGlue ? '' : 'none';
+    $('wrapSlot').style.display = hasSlot ? '' : 'none';
+    $('overlapOpt').style.display = p.type === '0202' ? '' : 'none';
+    $('lidOpts').style.display = hasLidH || hasClear ? '' : 'none';
+    $('wrapLidH').style.display = hasLidH ? '' : 'none';
+    $('wrapClear').style.display = hasClear ? '' : 'none';
+    $('tabOpt').style.display = hasTab ? '' : 'none';
+
     $('dimHint').textContent = p.type === 'lid'
       ? (p.dimMode === 'inner'
         ? 'Misure interne del fondo. Il coperchio viene calcolato per chiudersi sopra il fondo.'
         : 'Larghezza e profondità esterne del coperchio chiuso; altezza = altezza interna del fondo.')
       : HINTS[p.type];
+
     if (err) { current = null; return; }
     try {
       current = { ...Geometry.build(p), params: p };
       const area = (current.width * current.height) / 1e6;
+      let extra = `<span>Misure interne: <b>${fmt(current.inner.L)}×${fmt(current.inner.H)}×${fmt(current.inner.P)} mm</b></span>`;
+      if (p.type === '0901') {
+        extra = `<span>Falda tagliata: <b>${fmt(current.width)}×${fmt(current.height)} mm</b></span>`;
+      } else if (p.type === '0933') {
+        const cellW = (current.inner.L - 2 * p.clearance - (p.cellsL - 1) * p.t) / p.cellsL;
+        const cellD = (current.inner.P - 2 * p.clearance - (p.cellsP - 1) * p.t) / p.cellsP;
+        const pcs = (p.cellsL - 1) + (p.cellsP - 1);
+        extra = `<span>Cella utile: <b>~${fmt(cellW)}×${fmt(cellD)} mm</b> (${pcs} divisori)</span>`;
+      }
       $('info').innerHTML = `<span>Foglio necessario: <b>${fmt(current.width)} × ${fmt(current.height)} mm</b></span>` +
-        `<span>Superficie: <b>${area.toLocaleString('it-IT', { maximumFractionDigits: 3 })} m²</b></span>` +
-        `<span>Misure interne: <b>${fmt(current.inner.L)}×${fmt(current.inner.H)}×${fmt(current.inner.P)} mm</b></span>`;
+        `<span>Superficie: <b>${area.toLocaleString('it-IT', { maximumFractionDigits: 3 })} m²</b></span>` + extra;
       $('canvas').innerHTML = svg(current);
     } catch (e) {
       current = null; $('error').textContent = e.message;
@@ -527,18 +1018,17 @@ li .btns { flex-wrap:wrap; }
   function fileBase() {
     const p = current.params;
     const n = ($('name').value.trim() || 'scatola').replace(/[^\w\-]+/g, '_');
-    return `${n}_${p.type}_${p.L}x${p.H}x${p.P}_${p.t}mm`;
+    const dims = p.type === '0901' ? `${p.L}x${p.P}` : `${p.L}x${p.H}x${p.P}`;
+    return `${n}_${p.type}_${dims}_${p.t}mm`;
   }
 
   const blobUrls = [];
   function download(bytes, name, mime) {
     const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
     blobUrls.push(url);
-    // 1) download automatico (può essere bloccato se la pagina è dentro un riquadro protetto)
     const a = document.createElement('a');
     a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
-    // 2) link sempre visibile, da cliccare se il download automatico non parte
     const area = $('dlArea');
     area.innerHTML = '';
     const p = document.createElement('p');
@@ -575,7 +1065,7 @@ li .btns { flex-wrap:wrap; }
   tPreset.value = '3';
 
   /* --- lista salvata --- */
-  const FIELDS = ['name', 'type', 'L', 'H', 'P', 't', 'glue', 'slot', 'lidHeight', 'clearance', 'tab', 'cutLayer', 'creaseLayer'];
+  const FIELDS = ['name', 'type', 'L', 'H', 'P', 't', 'glue', 'slot', 'lidHeight', 'clearance', 'tab', 'overlap', 'cellsL', 'cellsP', 'cutLayer', 'creaseLayer'];
   let mem = [];
   let persistent = true;
   try { localStorage.setItem(STORE + '-test', '1'); localStorage.removeItem(STORE + '-test'); } catch (e) { persistent = false; }
@@ -597,7 +1087,12 @@ li .btns { flex-wrap:wrap; }
     FIELDS.forEach((f) => { it[f] = $(f).value; });
     return it;
   };
-  const labelOf = (it) => `${TYPE_NAMES[it.type] || it.type} ${it.L}×${it.H}×${it.P} – ${it.t} mm${it.dimMode === 'outer' ? ' (est.)' : ''}`;
+  const labelOf = (it) => {
+    const dims = it.type === '0901' ? `${it.L}×${it.P}` : `${it.L}×${it.H}×${it.P}`;
+    const grid = it.type === '0933' ? ` (${it.cellsL || 3}×${it.cellsP || 2})` : '';
+    const ext = it.dimMode === 'outer' && it.type !== '0901' && it.type !== '0933' ? ' (est.)' : '';
+    return `${TYPE_NAMES[it.type] || it.type} ${dims}${grid} – ${it.t} mm${ext}`;
+  };
 
   function openItem(it) {
     FIELDS.forEach((f) => { if (it[f] !== undefined) $(f).value = it[f]; });
